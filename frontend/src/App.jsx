@@ -69,7 +69,14 @@ function App() {
     createShapes();
   }, []);
 
-  const handleStart = () => {
+  const handleResetToHome = () => {
+    setStep('start');
+    setCurrentQuestionIndex(0);
+    setAnswers({});
+    setShowExamples(false);
+  };
+
+  const handleStartDiagnosis = () => {
     setStep('question');
     setCurrentQuestionIndex(0);
     setAnswers({});
@@ -133,7 +140,7 @@ function App() {
               Sistema inteligente de análisis académico.
               <br />Verifica tus requisitos para titulación.
             </p>
-            <button className="btn-primary" onClick={handleStart}>
+            <button className="btn-primary" onClick={handleStartDiagnosis}>
               Iniciar Diagnóstico
             </button>
             <div style={{ marginTop: '2rem' }}>
@@ -177,7 +184,7 @@ function App() {
         )}
 
         {step === 'result' && result && (
-          <ResultCard result={result} onRetry={handleStart} />
+          <ResultCard result={result} onRetry={handleResetToHome} />
         )}
 
         {loading && <p className="fade-in" style={{ marginTop: '1.5rem', fontWeight: '600', color: 'var(--accent-color)' }}>Analizando...</p>}
