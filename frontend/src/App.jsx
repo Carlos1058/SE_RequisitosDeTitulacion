@@ -10,6 +10,27 @@ function App() {
   const [answers, setAnswers] = useState({});
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showExamples, setShowExamples] = useState(false);
+
+  // Predefined example cases
+  const exampleCases = [
+    {
+      name: "1. Titulación Exitosa (Todo aprobado)",
+      data: { credits_percentage: 100, social_service_completed: true, professional_practices_completed: true, humanist_formation_completed: true, language_requirement_met: true, exit_exam_presented: true, debt_tuition: false, debt_library: false, debt_lab: false, title_fee_paid: true }
+    },
+    {
+      name: "2. Fallo por Servicio Social",
+      data: { credits_percentage: 100, social_service_completed: false, professional_practices_completed: true, humanist_formation_completed: true, language_requirement_met: true, exit_exam_presented: true, debt_tuition: false, debt_library: false, debt_lab: false, title_fee_paid: true }
+    },
+    {
+      name: "3. Adeudos Pendientes (Colegiatura y Biblio)",
+      data: { credits_percentage: 100, social_service_completed: true, professional_practices_completed: true, humanist_formation_completed: true, language_requirement_met: true, exit_exam_presented: true, debt_tuition: true, debt_library: true, debt_lab: false, title_fee_paid: true }
+    },
+    {
+      name: "4. Alumno de Mitad de Carrera (50% Créditos)",
+      data: { credits_percentage: 50, social_service_completed: false, professional_practices_completed: false, humanist_formation_completed: false, language_requirement_met: false, exit_exam_presented: false, debt_tuition: false, debt_library: false, debt_lab: false, title_fee_paid: false }
+    }
+  ];
 
   // Define questions based on knowledge_base.py
   const questions = [
@@ -52,6 +73,13 @@ function App() {
     setStep('question');
     setCurrentQuestionIndex(0);
     setAnswers({});
+    setShowExamples(false);
+  };
+
+  const handleLoadExample = async (exampleData) => {
+    setShowExamples(false);
+    setAnswers(exampleData);
+    await submitDiagnosis(exampleData);
   };
 
   const handleAnswerChange = (key, value) => {
@@ -67,15 +95,16 @@ function App() {
     }
   };
 
-  const submitDiagnosis = async () => {
+  const submitDiagnosis = async (overrideAnswers = null) => {
     setLoading(true);
+    const dataToSend = overrideAnswers || answers;
     try {
       const response = await fetch('http://127.0.0.1:5001/api/evaluate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(answers),
+        body: JSON.stringify(dataToSend),
       });
       const data = await response.json();
       setResult({
@@ -98,7 +127,7 @@ function App() {
       <div className="app-container">
         <h1>Experto en Titulación</h1>
 
-        {step === 'start' && (
+        {step === 'start' && !showExamples && (
           <div className="fade-in">
             <p className="subtitle">
               Sistema inteligente de análisis académico.
@@ -106,6 +135,34 @@ function App() {
             </p>
             <button className="btn-primary" onClick={handleStart}>
               Iniciar Diagnóstico
+            </button>
+            <div style={{ marginTop: '2rem' }}>
+              <button
+                className="btn-subtle"
+                onClick={() => setShowExamples(true)}
+              >
+                Cargar Casos de Ejemplo
+              </button>
+            </div>
+          </div>
+        )}
+
+        {step === 'start' && showExamples && (
+          <div className="fade-in">
+            <p className="subtitle">Selecciona un caso de prueba para el Sistema Experto:</p>
+            <div className="examples-list">
+              {exampleCases.map((example, idx) => (
+                <button
+                  key={idx}
+                  className="btn-example"
+                  onClick={() => handleLoadExample(example.data)}
+                >
+                  {example.name}
+                </button>
+              ))}
+            </div>
+            <button className="btn-subtle" style={{ marginTop: '1.5rem' }} onClick={() => setShowExamples(false)}>
+              Volver Atrás
             </button>
           </div>
         )}
