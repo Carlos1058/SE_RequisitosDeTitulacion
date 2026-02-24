@@ -26,24 +26,26 @@ function App() {
   ];
 
   useEffect(() => {
-    // Determine background stars logic here if needed or just use CSS
-    const createStars = () => {
-      const container = document.getElementById('stars-container');
+    // Generate background floating shapes
+    const createShapes = () => {
+      const container = document.getElementById('background-animations');
       if (container) {
         container.innerHTML = '';
-        for (let i = 0; i < 50; i++) {
-          const star = document.createElement('div');
-          star.className = 'star';
-          star.style.left = `${Math.random() * 100}%`;
-          star.style.top = `${Math.random() * 100}%`;
-          star.style.width = `${Math.random() * 2 + 1}px`;
-          star.style.height = star.style.width;
-          star.style.animationDelay = `${Math.random() * 3}s`;
-          container.appendChild(star);
+        for (let i = 0; i < 15; i++) {
+          const shape = document.createElement('div');
+          shape.className = `floating-shape shape-${i % 3}`;
+          shape.style.left = `${Math.random() * 100}%`;
+          shape.style.top = `${Math.random() * 100}%`;
+          const size = Math.random() * 150 + 50;
+          shape.style.width = `${size}px`;
+          shape.style.height = `${size}px`;
+          shape.style.animationDelay = `${Math.random() * 5}s`;
+          shape.style.animationDuration = `${Math.random() * 10 + 10}s`;
+          container.appendChild(shape);
         }
       }
     };
-    createStars();
+    createShapes();
   }, []);
 
   const handleStart = () => {
@@ -91,7 +93,7 @@ function App() {
 
   return (
     <>
-      <div id="stars-container" className="start-container"></div>
+      <div id="background-animations" className="background-container"></div>
 
       <div className="app-container">
         <h1>Experto en Titulación</h1>
@@ -121,7 +123,7 @@ function App() {
           <ResultCard result={result} onRetry={handleStart} />
         )}
 
-        {loading && <p>Analizando...</p>}
+        {loading && <p className="fade-in" style={{ marginTop: '1.5rem', fontWeight: '600', color: 'var(--accent-color)' }}>Analizando...</p>}
       </div>
     </>
   )
